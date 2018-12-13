@@ -6,7 +6,7 @@ use OurHome\Http\Request;
 
 class Client {
     const APP_ROOT = 'https://app.ourhomeapp.com/';
-    const API_ROOT = 'https://api.ourhomeapp.com/api/v1';
+    const API_ROOT = 'https://api.ourhomeapp.com/api/v1/';
 
     protected $_config = null;
     protected $_username = null;
@@ -21,7 +21,11 @@ class Client {
     }
 
     public function login($username, $password){
-
+        $req = new Request(self::API_ROOT . "users/login/");
+        $req->addRequestHeader("AUTHORIZATION", "ClientID: " . $this->_config->apiClientId);
+        $req->addRequestHeader("X-AUTHORIZATION", "ClientID: " . $this->_config->apiClientId);
+        $response = $req->send(array('email'=>$username, 'password'=>$password));
+        print_r($response);
     }
 
     /**
@@ -38,7 +42,7 @@ class Client {
         $config = preg_replace("/\'/","\"", $config);
         preg_match_all("/,([^:]+):/", "," . str_replace("{","", $config), $items);
         foreach($items[1] as $item){
-            $config = str_replace($item, "\"" . ltrim(rtrim($item\"", $config);
+            $config = str_replace($item, '"' . ltrim(rtrim($item)) . '"', $config);
         }
 
         $this->_config = json_decode($config);

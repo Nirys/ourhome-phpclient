@@ -30,19 +30,33 @@ class Request {
         $this->_url = $url;
     }
 
+    public function _getHeaders(){
+        $items = [];
+        foreach($this->_requestHeaders as $key=>$value){
+            $items[] = $key . ": $value";
+        }
+        return $items;
+    }
+
     public function addRequestHeader($name, $value){
         $this->_requestHeaders[$name] = $value;
     }
 
-    public function send($username = null, $password = null){
-        curl_setopt($this->_curlHandle, CURLOPT_HEADER, $this->_requestHeaders);
+    public function send($data = null){
         curl_setopt($this->_curlHandle, CURLOPT_RETURNTRANSFER, true);
-        if($username && $password){
-            curl_setopt($this->_curlHandle, CURLOPT_USERPWD, $username . ":" . $password);
+        curl_setopt($this->_curlHandle, CURLINFO_HEADER_OUT, true);
+        if($data !== null){
+            curl_setopt($this->_curlHandle, CURLOPT_POST, true);
+            curl_setopt($this->_curlHandle, CURLOPT_POSTFIELDS, json_encode($data));
+            $this->addRequestHeader("Content-Type","application/json");
+            $this->addRequestHeader("Content-Length", strlen(json_encode($data)));
         }
+        curl_setopt($this->_curlHandle, CURLOPT_HTTPHEADER, $this->_getHeaders());
         $result = curl_exec($this->_curlHandle);
+
         $code = curl_getinfo($this->_curlHandle, CURLINFO_HTTP_CODE);
         $response = new Response($code, $this->_responseHeaders, $result);
+
         return $response;
     }
 }
