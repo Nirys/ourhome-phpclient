@@ -1,0 +1,16 @@
+{
+    "name": "our-home/our-home",
+    "description": "An API wrapper for the OurHome App",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Kath Young",
+            "email": "kath2young@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-0": {
+            "OurHome": "src/"
+        }
+    }
+}
