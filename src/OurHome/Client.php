@@ -6,26 +6,49 @@ use OurHome\Http\Request;
 
 class Client {
     const APP_ROOT = 'https://app.ourhomeapp.com/';
-    const API_ROOT = 'https://api.ourhomeapp.com/api/v1/';
+    const API_ROOT = 'https://api.ourhomeapp.com';
 
     protected $_config = null;
     protected $_username = null;
     protected $_password = null;
+    protected $_cookies = null;
+    protected $_loggedIn = null;
+
+    protected $_currentUser = null;
 
     /**
      * Client constructor.
      * @throws \Exception
      */
     public function __construct(){
+        $this->_cookies = array();
         $this->_getConfigData();
     }
 
     public function login($username, $password){
-        $req = new Request(self::API_ROOT . "users/login/");
+        $req = new Request(self::API_ROOT . "/api/v1/users/login/");
         $req->addRequestHeader("AUTHORIZATION", "ClientID: " . $this->_config->apiClientId);
         $req->addRequestHeader("X-AUTHORIZATION", "ClientID: " . $this->_config->apiClientId);
         $response = $req->send(array('email'=>$username, 'password'=>$password));
-        print_r($response);
+
+        if($response->getStatusCode() == 200){
+            $cookies = $response->getHeader('Set-Cookie', array());
+            $this->_updateCookies( $cookies );
+            $data = json_decode($response->getBody());
+            $this->_currentUser = new User($data, $this);
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public function getRequest($uri){
+        $req = new Request(self::API_ROOT . $uri);
+        $req->addRequestHeader("AUTHORIZATION", "ClientID: " . $this->_config->apiClientId);
+        $req->addRequestHeader("X-AUTHORIZATION", "ClientID: " . $this->_config->apiClientId);
+        if(is_array($this->_cookies)){
+
+        }
     }
 
     /**
