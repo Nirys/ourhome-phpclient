@@ -24,6 +24,10 @@ class Response {
         }
     }
 
+    public function getCookies(){
+        return $this->_cookies;
+    }
+
     public function getStatusCode(){
         return $this->_responseCode;
     }

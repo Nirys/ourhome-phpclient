@@ -32,8 +32,7 @@ class Client {
         $response = $req->send(array('email'=>$username, 'password'=>$password));
 
         if($response->getStatusCode() == 200){
-            $cookies = $response->getHeader('Set-Cookie', array());
-            $this->_updateCookies( $cookies );
+            $this->_cookies = $response->getCookies();
             $data = json_decode($response->getBody());
             $this->_currentUser = new User($data, $this);
             return true;
@@ -47,7 +46,11 @@ class Client {
         $req->addRequestHeader("AUTHORIZATION", "ClientID: " . $this->_config->apiClientId);
         $req->addRequestHeader("X-AUTHORIZATION", "ClientID: " . $this->_config->apiClientId);
         if(is_array($this->_cookies)){
-
+            $req->setCookies($this->_cookies);
+            $cookies = array();
+            foreach($this->_cookies as $cookie){
+                $cookies .= $cookie->getCookie() . ';';
+            }
         }
     }
 
