@@ -65,6 +65,7 @@ class User {
      *
      */
     public function getCurrentHouse(){
+        $result = $this->_client->getRequest($this->_currentHouseUri);
 
     }
 }

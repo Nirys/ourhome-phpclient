@@ -41,17 +41,26 @@ class Client {
         }
     }
 
+    /**
+     * @return User
+     */
+    public function getUser(){
+        return $this->_currentUser;
+    }
+
     public function getRequest($uri){
         $req = new Request(self::API_ROOT . $uri);
         $req->addRequestHeader("AUTHORIZATION", "ClientID: " . $this->_config->apiClientId);
         $req->addRequestHeader("X-AUTHORIZATION", "ClientID: " . $this->_config->apiClientId);
         if(is_array($this->_cookies)){
-            $req->setCookies($this->_cookies);
-            $cookies = array();
+            $cookies = '';
             foreach($this->_cookies as $cookie){
                 $cookies .= $cookie->getCookie() . ';';
             }
+            $req->setCookies($cookies);
         }
+        $result = $req->send();
+        return $result;
     }
 
     /**

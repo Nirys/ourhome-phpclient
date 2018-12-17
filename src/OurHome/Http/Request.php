@@ -38,6 +38,10 @@ class Request {
         return $items;
     }
 
+    public function setCookies($cookies){
+        curl_setopt($this->_curlHandle, CURLOPT_COOKIE, $cookies);
+    }
+
     public function addRequestHeader($name, $value){
         $this->_requestHeaders[$name] = $value;
     }

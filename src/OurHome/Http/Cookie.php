@@ -9,6 +9,7 @@ class Cookie {
     protected $_path = null;
 
     public function __construct($cookie){
+        date_default_timezone_set('UTC');
         $parts = preg_split('/;/', $cookie);
         $name = null;
         foreach($parts as $part){
