@@ -66,6 +66,7 @@ class User {
      */
     public function getCurrentHouse(){
         $result = $this->_client->getRequest($this->_currentHouseUri);
-
+        $dataObj = json_decode($result->getBody());
+        file_put_contents('home.data', print_r($dataObj, true));
     }
 }

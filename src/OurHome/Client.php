@@ -63,6 +63,12 @@ class Client {
         return $result;
     }
 
+    public function getShoppingCategories(){
+        $data = $this->getRequest('/api/v1/shopping_categories/');
+        $dataObj = json_decode($data->getBody());
+        file_put_contents('shoppingcats.data', print_r($dataObj, true));
+    }
+
     /**
      * @throws \Exception
      */
