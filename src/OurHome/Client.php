@@ -5,6 +5,8 @@ namespace OurHome;
 use OurHome\Http\Request;
 use OurHome\Shopping\Category;
 use OurHome\Shopping\CategoryList;
+use OurHome\Shopping\Item;
+use OurHome\Shopping\ItemList;
 
 class Client {
     const APP_ROOT = 'https://app.ourhomeapp.com/';
@@ -63,6 +65,19 @@ class Client {
         }
         $result = $req->send();
         return $result;
+    }
+
+    /**
+     * @return ItemList
+     */
+    public function getShoppingList(){
+        $data = $this->getRequest("/api/v1/shopping_items/?is_active=true&sorting=true");
+        $dataObj = json_decode($data->getBody());
+        $items = new ItemList();
+        foreach($dataObj->objects as $item){
+            $items->append(new Item($item, $this));
+        }
+        return $items;
     }
 
     /**
