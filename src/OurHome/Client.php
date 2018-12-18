@@ -3,6 +3,8 @@
 namespace OurHome;
 
 use OurHome\Http\Request;
+use OurHome\Shopping\Category;
+use OurHome\Shopping\CategoryList;
 
 class Client {
     const APP_ROOT = 'https://app.ourhomeapp.com/';
@@ -63,10 +65,18 @@ class Client {
         return $result;
     }
 
+    /**
+     * @return CategoryList
+     */
     public function getShoppingCategories(){
         $data = $this->getRequest('/api/v1/shopping_categories/');
         $dataObj = json_decode($data->getBody());
-        file_put_contents('shoppingcats.data', print_r($dataObj, true));
+
+        $categories = new CategoryList();
+        foreach($dataObj->objects as $item){
+            $categories->append( new Category($item, $this));
+        }
+        return $categories;
     }
 
     /**
