@@ -33,4 +33,23 @@ class AbstractEntityCollection implements \Iterator {
         $this->_items[] = $object;
     }
 
+    public function findById($id){
+        foreach($this->_items as $position => $item){
+            if($item->getId() == $id) return $item;
+        }
+        return null;
+    }
+
+    public function findByResourceUri($uri){
+        return $this->findByMethod($uri, 'getResourceUri');
+    }
+
+    public function findByMethod($value, $method){
+        foreach($this->_items as $position => $item){
+            if($item->{$method}() == $value){
+                return $item;
+            }
+        }
+        return null;
+    }
 }

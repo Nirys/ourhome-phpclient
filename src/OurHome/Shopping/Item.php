@@ -2,7 +2,14 @@
 namespace OurHome\Shopping;
 
 use OurHome\AbstractEntity;
+use OurHome\Users\User;
 
+/**
+ * Class Item
+ * @package OurHome\Shopping
+ * @method string getName()
+ * @method User|null getLastAddedBy()
+ */
 class Item extends AbstractEntity {
     protected $_attributes = array(
         '_onCurrentList' => 'added_to_current_house_list',
@@ -22,4 +29,10 @@ class Item extends AbstractEntity {
         '_quantity' => 'quantity',
         '_resourceUri' => 'resource_uri'
     );
+
+
+    protected function _parseLastAddedBy($value){
+        $user = $this->_client->getHouse()->getUsers()->findByResourceUri($value);
+        return $user;
+    }
 }

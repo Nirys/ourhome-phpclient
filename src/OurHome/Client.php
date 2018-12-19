@@ -7,6 +7,7 @@ use OurHome\Shopping\Category;
 use OurHome\Shopping\CategoryList;
 use OurHome\Shopping\Item;
 use OurHome\Shopping\ItemList;
+use OurHome\Users\User;
 
 class Client {
     const APP_ROOT = 'https://app.ourhomeapp.com/';
@@ -18,7 +19,9 @@ class Client {
     protected $_cookies = null;
     protected $_loggedIn = null;
 
+    /** @var User */
     protected $_currentUser = null;
+    protected $_currentHouse = null;
 
     /**
      * Client constructor.
@@ -52,19 +55,8 @@ class Client {
         return $this->_currentUser;
     }
 
-    public function getRequest($uri){
-        $req = new Request(self::API_ROOT . $uri);
-        $req->addRequestHeader("AUTHORIZATION", "ClientID: " . $this->_config->apiClientId);
-        $req->addRequestHeader("X-AUTHORIZATION", "ClientID: " . $this->_config->apiClientId);
-        if(is_array($this->_cookies)){
-            $cookies = '';
-            foreach($this->_cookies as $cookie){
-                $cookies .= $cookie->getCookie() . ';';
-            }
-            $req->setCookies($cookies);
-        }
-        $result = $req->send();
-        return $result;
+    public function getHouse(){
+        return $this->_currentUser->getCurrentHouse();
     }
 
     /**
@@ -92,6 +84,26 @@ class Client {
             $categories->append( new Category($item, $this));
         }
         return $categories;
+    }
+
+    /**
+     * Make an abstracted request against the API
+     * @param $uri
+     * @return Http\Response
+     */
+    public function getRequest($uri){
+        $req = new Request(self::API_ROOT . $uri);
+        $req->addRequestHeader("AUTHORIZATION", "ClientID: " . $this->_config->apiClientId);
+        $req->addRequestHeader("X-AUTHORIZATION", "ClientID: " . $this->_config->apiClientId);
+        if(is_array($this->_cookies)){
+            $cookies = '';
+            foreach($this->_cookies as $cookie){
+                $cookies .= $cookie->getCookie() . ';';
+            }
+            $req->setCookies($cookies);
+        }
+        $result = $req->send();
+        return $result;
     }
 
     /**
