@@ -92,6 +92,20 @@ class Client {
      * @return Http\Response
      */
     public function getRequest($uri){
+        $req = $this->_createRequest($uri);
+        $result = $req->send();
+        return $result;
+    }
+
+    /**
+     *
+     */
+    public function postRequest($uri, $data, $method = 'POST'){
+        $req = $this->_createRequest($uri);
+        return $req->send($data);
+    }
+
+    protected function _createRequest($uri){
         $req = new Request(self::API_ROOT . $uri);
         $req->addRequestHeader("AUTHORIZATION", "ClientID: " . $this->_config->apiClientId);
         $req->addRequestHeader("X-AUTHORIZATION", "ClientID: " . $this->_config->apiClientId);
@@ -102,9 +116,10 @@ class Client {
             }
             $req->setCookies($cookies);
         }
-        $result = $req->send();
-        return $result;
+        return $req;
     }
+
+
 
     /**
      * @throws \Exception

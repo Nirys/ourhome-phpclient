@@ -3,6 +3,7 @@ namespace OurHome;
 
 class AbstractEntity{
     protected $_attributes = array();
+    protected $_excludeExportAttributes = array();
     protected $_attributeValues = array();
     /** @var Client  */
     protected $_client = null;
@@ -14,7 +15,10 @@ class AbstractEntity{
      */
     public function __construct($jsonObject, $_client){
         $this->_client = $_client;
+        $this->_loadData($jsonObject);
+    }
 
+    protected function _loadData($jsonObject){
         foreach($this->_attributes as $key=>$value){
             $actualValue = property_exists($jsonObject, $value) ? $jsonObject->{$value} : null;
             $this->{'set' . ucfirst(substr($key, 1, strlen($key)))}($actualValue);
@@ -66,6 +70,14 @@ class AbstractEntity{
         echo "**/";
     }
 
+    public function save(){
+
+    }
+
+    public function delete(){
+
+    }
+
     /**
      *  Thanks webbiedave
      *  https://stackoverflow.com/questions/2791998/convert-dashes-to-camelcase-in-php
@@ -79,5 +91,20 @@ class AbstractEntity{
         }
 
         return $str;
+    }
+
+    public function toArray(){
+        $data = array();
+        foreach($this->_attributes as $key => $value){
+            if(!in_array($value, $this->_excludeExportAttributes)){
+                $method = "get" . ucfirst(substr($key, 1, strlen($key)));
+                $attrValue = $this->{$method}();
+                if(is_object($attrValue)){
+                    $attrValue = $attrValue->toArray();
+                }
+                $data[$value] = $attrValue;
+            }
+        }
+        return $data;
     }
 }
