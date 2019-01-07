@@ -69,7 +69,6 @@ class Item extends AbstractEntity {
     }
 
     public function save(){
-        echo "Save";
         if($this->getId() == null){
             return $this->create();
         }else{
@@ -93,6 +92,12 @@ class Item extends AbstractEntity {
     }
 
     protected function update(){
-echo "Udpate";
+        $itemObject = $this->toArray();
+        $result = $this->_client->postRequest($this->_resourceUri, $itemObject, 'PATCH');
+        if($result->getStatusCode() == 202){
+            $this->_loadData(json_decode($result->getBody()));
+        }else{
+            throw new \Exception("Invalid response: " . $result->getBody() );
+        }
     }
 }
